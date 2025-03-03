@@ -8,36 +8,63 @@ development or if you want to perform backups of a github account.
 
 ## Usage
 
-For cloning repositories, use:
-    mxrepo clone CONTEXT [PACKAGE]
+Clone repositories:
 
-For updating repositories, use:
-    mxrepo pull [PACKAGE]
+```shell
+mxrepo clone <CONTEXT> [<PACKAGE>]
+```
 
-For backup of context, use:
-    mxrepo backup CONTEXT
+Update repositories:
 
-For checking repository state, use:
-    mxrepo status [PACKAGE]
+```shell
+mxrepo pull [<PACKAGE>]
+```
 
-For listing repository branch, use:
-    mxrepo branch [PACKAGE]
+Backup of context:
 
-For showing repository diff, use:
-    mxrepo diff [PACKAGE]
+```shell
+mxrepo backup <CONTEXT>
+```
 
-For committing all repository changes, use:
-    mxrepo commit "MESSAGE" [PACKAGE]
+Check repository state:
 
-For pushing all committed changes, use:
-    mxrepo push [PACKAGE]
+```shell
+mxrepo status [<PACKAGE>]
+```
 
-For discarding all changes, use:
-    mxrepo checkout [package]
+Listing repository branch:
+
+```shell
+mxrepo branch [<PACKAGE>]
+```
+
+Show repository diff:
+
+```shell
+mxrepo diff [<PACKAGE>]
+```
+
+Commit all repository changes:
+
+```shell
+mxrepo commit "<MESSAGE>" [<PACKAGE>]
+```
+
+Push all committed changes:
+
+```shell
+mxrepo push [<PACKAGE>]
+```
+
+Discard all changes:
+
+```shell
+mxrepo checkout [<PACKAGE>]
+```
 
 ## Copyright
 
-- Copyright (c) 2022-2024 mxstack Contributors
+- Copyright (c) 2025 mxstack Contributors
 - BSD 2-clause license (see below)
 
 ## Contributors
