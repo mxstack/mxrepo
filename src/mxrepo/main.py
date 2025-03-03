@@ -4,7 +4,8 @@ import json
 import os
 import subprocess
 import sys
-import urllib
+import urllib.error
+import urllib.request
 
 
 mainparser = ArgumentParser(description="Git helper utilities")
@@ -126,10 +127,10 @@ sub.set_defaults(func=perform_pull)
 def perform(cmd):
     pr = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = pr.communicate()
-    print(stdout)
+    print(stdout.decode())
     if pr.returncode != 0:
         print("{} failed to perform: exit code {}".format(" ".join(cmd), pr.returncode))
-        print(stderr)
+        print(stderr.decode())
 
 
 def perform_backup(arguments):
