@@ -2,3 +2,5 @@
 __pycache__
 /.mxmake/
 /requirements-mxdev.txt
+/.claude/
+CLAUDE.md
