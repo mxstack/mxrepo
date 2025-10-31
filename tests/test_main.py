@@ -144,14 +144,17 @@ class TestQueryRepos:
 
     def test_query_repos_organization_success(self, mocker):
         """Test querying repositories from an organization."""
-        mock_response = MagicMock()
-        mock_response.read.return_value = json.dumps([
+        mock_response1 = MagicMock()
+        mock_response1.read.return_value = json.dumps([
             {"name": "repo1"},
             {"name": "repo2"},
         ]).encode()
 
+        mock_response2 = MagicMock()
+        mock_response2.read.return_value = json.dumps([]).encode()
+
         mock_urlopen = mocker.patch("urllib.request.urlopen")
-        mock_urlopen.return_value = mock_response
+        mock_urlopen.side_effect = [mock_response1, mock_response2]
 
         result = query_repos("testorg")
 
@@ -161,23 +164,27 @@ class TestQueryRepos:
 
     def test_query_repos_user_fallback(self, mocker):
         """Test fallback to user endpoint when org fails."""
-        mock_response = MagicMock()
-        mock_response.read.return_value = json.dumps([
+        mock_response1 = MagicMock()
+        mock_response1.read.return_value = json.dumps([
             {"name": "user_repo1"},
         ]).encode()
 
+        mock_response2 = MagicMock()
+        mock_response2.read.return_value = json.dumps([]).encode()
+
         mock_urlopen = mocker.patch("urllib.request.urlopen")
-        # First call (org) fails, second call (user) succeeds
+        # First call (org) fails, second call (user) succeeds, third call (pagination) returns empty
         mock_urlopen.side_effect = [
             urllib.error.URLError("Not found"),
-            mock_response,
+            mock_response1,
+            mock_response2,
         ]
 
         result = query_repos("testuser")
 
         assert len(result) == 1
         assert result[0]["name"] == "user_repo1"
-        assert mock_urlopen.call_count == 2
+        assert mock_urlopen.call_count == 3
 
     def test_query_repos_pagination(self, mocker, capsys):
         """Test that query_repos handles pagination."""

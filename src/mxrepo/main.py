@@ -32,19 +32,19 @@ def hilite(string, color, bold):
 
 
 def query_repos(context):
-    org_url = "https://api.github.com/orgs/%s/repos" % context
-    user_url = "https://api.github.com/users/%s/repos" % context
-    query = "%s?page=%i&per_page=50"
+    org_url = f"https://api.github.com/orgs/{context}/repos"
+    user_url = f"https://api.github.com/users/{context}/repos"
+    query = "{}?page={}&per_page=50"
     data = list()
     page = 1
     while True:
         try:
-            url = query % (org_url, page)
-            res = urllib.request.urlopen(url)
+            url = query.format(org_url, page)
+            res = urllib.request.urlopen(url)  # noqa: S310
         except urllib.error.URLError:
             try:
-                url = query % (user_url, page)
-                res = urllib.request.urlopen(url)
+                url = query.format(user_url, page)
+                res = urllib.request.urlopen(url)  # noqa: S310
             except urllib.error.URLError as e:
                 print(e)
                 sys.exit(0)
@@ -54,21 +54,21 @@ def query_repos(context):
             break
         data += page_data
         page += 1
-    print("Fetched %i repositories for '%s'" % (len(data), context))
+    print(f"Fetched {len(data)} repositories for '{context}'")
     return data
 
 
 def perform_clone(arguments):
-    base_uri = "git@github.com:%s/%s.git"
+    base_uri = "git@github.com:{}/{}.git"
     context = arguments.context[0]
     if arguments.repository:
         repos = arguments.repository
     else:
         repos = [_["name"] for _ in query_repos(arguments.context)]
     for repo in repos:
-        uri = base_uri % (context, repo)
+        uri = base_uri.format(context, repo)
         cmd = ["git", "clone", uri]
-        subprocess.call(cmd)
+        subprocess.call(cmd)  # noqa: S603
 
 
 sub = subparsers.add_parser("clone", help="Clone from an organisation or a user")
@@ -82,14 +82,11 @@ sub.set_defaults(func=perform_clone)
 
 
 def get_branch():
-    cmd = "git branch"
-    p = subprocess.Popen(
+    cmd = ["git", "branch"]
+    p = subprocess.Popen(  # noqa: S603
         cmd,
-        shell=True,
-        stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        close_fds=True,
     )
     output = p.stdout.readlines()
     for line in output:
@@ -109,9 +106,9 @@ def perform_pull(arguments):
         if ".git" not in listdir(child):
             continue
         os.chdir(child)
-        print("Perform pull for '%s'" % hilite(child, "blue", True))
+        print(f"Perform pull for '{hilite(child, 'blue', True)}'")
         cmd = ["git", "pull", "origin", get_branch()]
-        subprocess.call(cmd)
+        subprocess.call(cmd)  # noqa: S603
         os.chdir("..")
 
 
@@ -125,7 +122,7 @@ sub.set_defaults(func=perform_pull)
 
 
 def perform(cmd):
-    pr = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    pr = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)  # noqa: S603
     stdout, stderr = pr.communicate()
     print(stdout.decode())
     if pr.returncode != 0:
@@ -140,18 +137,18 @@ def perform_backup(arguments):
     os.chdir(context)
     contents = listdir(".")
     data = query_repos(context)
-    base_uri = "git@github.com:%s/%s.git"
+    base_uri = "git@github.com:{}/{}.git"
     for repo in data:
         name = repo["name"]
-        fs_name = "%s.git" % name
+        fs_name = f"{name}.git"
         if fs_name in contents:
-            print("Fetching existing local repository '%s'" % fs_name)
+            print(f"Fetching existing local repository '{fs_name}'")
             os.chdir(fs_name)
             perform(["git", "fetch", "origin"])
             os.chdir("..")
         else:
-            print("Cloning new repository '%s'" % fs_name)
-            uri = base_uri % (context, name)
+            print(f"Cloning new repository '{fs_name}'")
+            uri = base_uri.format(context, name)
             perform(["git", "clone", "--bare", "--mirror", uri])
 
 
@@ -173,9 +170,9 @@ def perform_status(arguments):
         if ".git" not in listdir(child):
             continue
         os.chdir(child)
-        print("Status for '%s'" % hilite(child, "blue", True))
+        print(f"Status for '{hilite(child, 'blue', True)}'")
         cmd = ["git", "status"]
-        subprocess.call(cmd)
+        subprocess.call(cmd)  # noqa: S603
         os.chdir("..")
 
 
@@ -201,9 +198,9 @@ def perform_branch(arguments):
         if ".git" not in listdir(child):
             continue
         os.chdir(child)
-        print("Branches for '%s'" % hilite(child, "blue", True))
+        print(f"Branches for '{hilite(child, 'blue', True)}'")
         cmd = ["git", "branch"]
-        subprocess.call(cmd)
+        subprocess.call(cmd)  # noqa: S603
         os.chdir("..")
 
 
@@ -229,9 +226,9 @@ def perform_diff(arguments):
         if ".git" not in listdir(child):
             continue
         os.chdir(child)
-        print("Diff for '%s'" % hilite(child, "blue", True))
+        print(f"Diff for '{hilite(child, 'blue', True)}'")
         cmd = ["git", "diff"]
-        subprocess.call(cmd)
+        subprocess.call(cmd)  # noqa: S603
         os.chdir("..")
 
 
@@ -258,9 +255,9 @@ def perform_commit(arguments):
         if ".git" not in listdir(child):
             continue
         os.chdir(child)
-        print("Commit all changes resources for '%s'" % hilite(child, "blue", True))
+        print(f"Commit all changes resources for '{hilite(child, 'blue', True)}'")
         cmd = ["git", "commit", "-am", message]
-        subprocess.call(cmd)
+        subprocess.call(cmd)  # noqa: S603
         os.chdir("..")
 
 
@@ -288,9 +285,9 @@ def perform_push(arguments):
         if ".git" not in listdir(child):
             continue
         os.chdir(child)
-        print("Perform push for '%s'" % hilite(child, "blue", True))
+        print(f"Perform push for '{hilite(child, 'blue', True)}'")
         cmd = ["git", "push", "origin", get_branch()]
-        subprocess.call(cmd)
+        subprocess.call(cmd)  # noqa: S603
         os.chdir("..")
 
 
@@ -314,9 +311,9 @@ def perform_checkout(arguments):
         if ".git" not in listdir(child):
             continue
         os.chdir(child)
-        print("Perform checkout for '%s'" % hilite(child, "blue", True))
+        print(f"Perform checkout for '{hilite(child, 'blue', True)}'")
         cmd = ["git", "checkout", "."]
-        subprocess.call(cmd)
+        subprocess.call(cmd)  # noqa: S603
         os.chdir("..")
 
 
