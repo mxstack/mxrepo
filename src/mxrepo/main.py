@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from importlib.metadata import version
 
 import json
 import os
@@ -9,6 +10,11 @@ import urllib.request
 
 
 mainparser = ArgumentParser(description="Git helper utilities")
+mainparser.add_argument(
+    "--version",
+    action="version",
+    version=f"%(prog)s {version('mxrepo')}",
+)
 subparsers = mainparser.add_subparsers(help="command", required=True)
 
 
