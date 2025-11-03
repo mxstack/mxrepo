@@ -79,6 +79,7 @@ exclude = [
     "__pycache__",
     "build",
     "dist",
+    "src/mxrepo/_version.py",
 ]
 
 [tool.ruff.lint]
