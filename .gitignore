@@ -1,6 +1,9 @@
-*.egg-info
 __pycache__
+.claude
+.coverage
+*.egg-info
 /.mxmake/
+/reports/
 /requirements-mxdev.txt
 /.claude/
 CLAUDE.md
