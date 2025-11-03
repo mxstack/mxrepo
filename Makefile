@@ -39,6 +39,13 @@ INCLUDE_MAKEFILE?=include.mk
 # No default value.
 EXTRA_PATH?=
 
+# Path to Python project relative to Makefile (repository root).
+# Leave empty if Python project is in the same directory as Makefile.
+# For monorepo setups, set to subdirectory name (e.g., `backend`).
+# Future-proofed for multi-language monorepos (e.g., PROJECT_PATH_NODEJS).
+# No default value.
+PROJECT_PATH_PYTHON?=
+
 ## core.mxenv
 
 # Primary Python interpreter to use. It is used to create the
@@ -155,6 +162,9 @@ TYPECHECK_TARGETS?=
 FORMAT_TARGETS?=
 
 export PATH:=$(if $(EXTRA_PATH),$(EXTRA_PATH):,)$(PATH)
+
+# Helper variable: adds trailing slash to PROJECT_PATH_PYTHON only if non-empty
+PYTHON_PROJECT_PREFIX=$(if $(PROJECT_PATH_PYTHON),$(PROJECT_PATH_PYTHON)/,)
 
 # Defensive settings for make: https://tech.davis-hansson.com/p/make/
 SHELL:=bash
@@ -299,6 +309,11 @@ CLEAN_TARGETS+=mxenv-clean
 # ruff
 ##############################################################################
 
+# Adjust RUFF_SRC to respect PROJECT_PATH_PYTHON if still at default
+ifeq ($(RUFF_SRC),src)
+RUFF_SRC:=$(PYTHON_PROJECT_PREFIX)src
+endif
+
 RUFF_TARGET:=$(SENTINEL_FOLDER)/ruff.sentinel
 $(RUFF_TARGET): $(MXENV_TARGET)
 	@echo "Install Ruff"
@@ -333,6 +348,11 @@ CLEAN_TARGETS+=ruff-clean
 ##############################################################################
 # isort
 ##############################################################################
+
+# Adjust ISORT_SRC to respect PROJECT_PATH_PYTHON if still at default
+ifeq ($(ISORT_SRC),src)
+ISORT_SRC:=$(PYTHON_PROJECT_PREFIX)src
+endif
 
 ISORT_TARGET:=$(SENTINEL_FOLDER)/isort.sentinel
 $(ISORT_TARGET): $(MXENV_TARGET)
@@ -391,7 +411,7 @@ else
 	@echo "[settings]" > $(PROJECT_CONFIG)
 endif
 
-LOCAL_PACKAGE_FILES:=$(wildcard pyproject.toml setup.cfg setup.py requirements.txt constraints.txt)
+LOCAL_PACKAGE_FILES:=$(wildcard $(PYTHON_PROJECT_PREFIX)pyproject.toml $(PYTHON_PROJECT_PREFIX)setup.cfg $(PYTHON_PROJECT_PREFIX)setup.py $(PYTHON_PROJECT_PREFIX)requirements.txt $(PYTHON_PROJECT_PREFIX)constraints.txt)
 
 FILES_TARGET:=requirements-mxdev.txt
 $(FILES_TARGET): $(PROJECT_CONFIG) $(MXENV_TARGET) $(SOURCES_TARGET) $(LOCAL_PACKAGE_FILES)

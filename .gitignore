@@ -3,6 +3,7 @@ __pycache__
 .coverage
 *.egg-info
 /.mxmake/
+/dist/
 /reports/
 /requirements-mxdev.txt
 /.claude/
