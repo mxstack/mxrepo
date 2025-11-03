@@ -1,13 +1,4 @@
-import json
-import os
 from argparse import Namespace
-from unittest.mock import MagicMock
-from unittest.mock import call
-from unittest.mock import patch
-
-import pytest
-import urllib.error
-
 from mxrepo.main import get_branch
 from mxrepo.main import hilite
 from mxrepo.main import listdir
@@ -21,6 +12,10 @@ from mxrepo.main import perform_pull
 from mxrepo.main import perform_push
 from mxrepo.main import perform_status
 from mxrepo.main import query_repos
+from unittest.mock import MagicMock
+
+import json
+import urllib.error
 
 
 class TestListdir:
