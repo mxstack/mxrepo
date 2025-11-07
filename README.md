@@ -17,7 +17,7 @@ The tool operates on all git repositories found in the current directory (those 
 
 ## Prerequisites
 
-- **Python 3.9 or higher**
+- **Python 3.10 or higher**
 - **Git** must be installed and available in PATH
 - **GitHub Access**: For `clone` and `backup` commands, repositories must be accessible via GitHub's public API (no authentication is performed)
 
